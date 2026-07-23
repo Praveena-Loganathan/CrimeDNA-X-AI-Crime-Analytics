@@ -1,5 +1,7 @@
 # 🕵️ CrimeDNA-X — AI-Powered Behavioral Crime Linkage
+
 CrimeDNA-X is a behavioral crime linkage and investigation support system that helps investigators identify similar crime patterns and get explainable investigation recommendations. It uses **Adaptive Behavioral Crime Signatures (ABCS)** to match crimes based on behavior, not just basic details.
+
 ---
 ## Why I Built This
 Most crime analytics tools focus on:
@@ -7,16 +9,15 @@ Most crime analytics tools focus on:
 - what
 - where
 - when  
-But in real investigations, **how** the crime was committed (the offender’s behavior) is often more important for linking cases.
+But in real investigations, **how** the crime was committed (the offender's behavior) is often more important for linking cases.
 I built CrimeDNA-X to:
 - Detect patterns across crimes using behavioral signatures.
 - Surface similar past cases when a new FIR is entered.
 - Provide clear, explainable reasoning behind each match.
 - Keep an audit trail for accountability and transparency.
----
 ## What It Does
 - **Adaptive Behavioral Crime Signatures (ABCS)**
-  - Converts each crime into a behavioral “fingerprint” (MO, entry method, target type, timing, etc.).
+  - Converts each crime into a behavioral "fingerprint" (MO, entry method, target type, timing, etc.).
   - Uses these signatures to find similar crimes, even if basic details differ.
 - **Similar Crime Pattern Matching**
   - When a new case is entered, the system:
@@ -30,19 +31,16 @@ I built CrimeDNA-X to:
 - **Audit Trail**
   - Logs key events (queries, matches, recommendations).
   - Uses hash‑chaining to make the log tamper‑evident.
----
 ## Tech Stack
 - Python
 - Streamlit (UI + session state)
 - Similarity / matching logic for behavioral signatures
 - SHA‑256 hashing (for audit log)
----
 ## How to Run Locally
 1. Clone the repo:
    ```bash
-   git clone <your-repo-url>
-   cd CrimeDNA-X
-   ```
+   git clone https://github.com/Praveena-Loganathan/CrimeDNA-X-AI-Crime-Analytics
+   cd CrimeDNA-X-AI-Crime-Analytics
 2. Install dependencies:
    ```bash
    pip install -r requirements.txt
@@ -75,4 +73,4 @@ If I had more time, I would add:
 ## Note
 This is a hackathon prototype. The matching logic and explanations are simplified for the demo. The goal is to show how behavioral signatures and explainable AI can support investigations, not to replace human judgment.
 ## Author
-Built by **<Your Name>** as a hackathon project for the AI-Driven Crime Analytics & Visualization Platform challenge.
+Built by 'CogniCore' as a hackathon project for the AI-Driven Crime Analytics & Visualization Platform challenge.
