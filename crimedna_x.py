@@ -1,23 +1,17 @@
 """
 CrimeDNA-X — Behavioral Crime Linkage (Python CLI version)
 Linking crime by behavior, not by identity.
-
 This tool does NOT identify suspects, predict guilt, or recommend arrests.
 Human investigators make all final decisions.
 """
-
 from dataclasses import dataclass, field
 from datetime import datetime
 from typing import Dict, List, Optional
-
-
 # ---------------- data ----------------
-
 FEATURE_KEYS = [
     "crimeType", "timeWindow", "entryMethod", "weaponTool", "targetType",
     "victimProfile", "escapeMethod", "locationChar", "mo",
 ]
-
 FEATURE_LABELS = {
     "crimeType": "Crime Type",
     "timeWindow": "Time Window",
@@ -29,13 +23,11 @@ FEATURE_LABELS = {
     "locationChar": "Location Characteristics",
     "mo": "Modus Operandi",
 }
-
 weights: Dict[str, float] = {
     "crimeType": 0.15, "timeWindow": 0.10, "entryMethod": 0.15, "weaponTool": 0.10,
     "targetType": 0.10, "victimProfile": 0.05, "escapeMethod": 0.10,
     "locationChar": 0.10, "mo": 0.15,
 }
-
 past_cases = [
     {"id": "A-2291", "title": "Burglary — Maple Court Apartments",
      "crimeType": "Residential burglary", "timeWindow": "01:00–04:00",
@@ -68,7 +60,6 @@ past_cases = [
      "escapeMethod": "Rides vehicle away", "locationChar": "Residential street",
      "mo": "Targets unlocked / older bikes"},
 ]
-
 incoming_firs = [
     {"key": "fir1", "id": "2026-0731", "title": "Break-in — Rose Garden Bungalow, ward 9",
      "crimeType": "Residential burglary", "timeWindow": "01:00–04:00",
@@ -83,7 +74,6 @@ incoming_firs = [
      "escapeMethod": "Rides vehicle away", "locationChar": "Residential street",
      "mo": "Targets unlocked / older bikes"},
 ]
-
 gap_library = {
     "Residential burglary": [
         "CCTV footage from adjoining streets pending",
@@ -105,18 +95,12 @@ gap_library = {
         "Similar-MO bike theft cluster not cross-checked",
     ],
 }
-
 feedback_state: Dict[str, str] = {}  # match case id -> 'confirmed' | 'rejected'
-
-
 # ---------------- helpers ----------------
-
 def normalize_weights():
     total = sum(weights[k] for k in FEATURE_KEYS)
     for k in FEATURE_KEYS:
         weights[k] = weights[k] / total
-
-
 def score_case(fir: dict, past_case: dict):
     score = 0.0
     matched = []
@@ -125,16 +109,12 @@ def score_case(fir: dict, past_case: dict):
             score += weights[k]
             matched.append(k)
     return {"score": round(score * 100), "matched": matched}
-
-
 def confidence_of(score: int):
     if score >= 85:
         return {"label": "High", "symbol": "●●●"}
     if score >= 65:
         return {"label": "Medium", "symbol": "●●○"}
     return {"label": "Low", "symbol": "●○○"}
-
-
 def compute_matches(fir: dict):
     scored = []
     for pc in past_cases:
@@ -142,33 +122,22 @@ def compute_matches(fir: dict):
         scored.append({"pc": pc, **result})
     scored.sort(key=lambda m: m["score"], reverse=True)
     return scored[:3]
-
-
 # ---------------- rendering (console) ----------------
-
 def render_stamp():
     now = datetime.now().strftime("%b %d, %Y").upper()
     print(f"ANALYSIS SESSION · {now}")
     print("CrimeDNA·X — Linking crime by behavior, not by identity")
     print("=" * 70)
-
-
 def render_fir_select():
     print("\nIncoming FIRs:")
     for i, f in enumerate(incoming_firs, 1):
         print(f"  [{i}] FIR #{f['id']} — {f['title']}")
-
-
 def render_ladder(fir: dict):
     print("\n--- Behavioral Crime DNA Profile ---")
     for k in FEATURE_KEYS:
         print(f"  {FEATURE_LABELS[k]:<26}: {fir[k]}")
-
-
 def render_fir_node(fir: dict):
     print(f"\n[FIR #{fir['id']}] {fir['title']}")
-
-
 def render_matches(matches: List[dict]):
     print("\n--- ABCS Similarity Engine — Case Board ---")
     for m in matches:
@@ -186,8 +155,6 @@ def render_matches(matches: List[dict]):
             mark = "✓" if k in m["matched"] else " "
             traits.append(f"[{mark}]{FEATURE_LABELS[k]}")
         print("    " + "  ".join(traits))
-
-
 def render_gaps(fir: dict):
     print("\n--- Investigation Gap Assistant ---")
     gaps = gap_library.get(fir["crimeType"], [])
@@ -196,8 +163,6 @@ def render_gaps(fir: dict):
         return
     for g in gaps:
         print(f"  ⚠ {g}")
-
-
 def render_report(fir: dict, matches: List[dict]):
     print("\n--- Explainable Investigation Report ---")
     top = matches[0]
@@ -219,8 +184,6 @@ def render_report(fir: dict, matches: List[dict]):
         print(f"  {i}. {s}")
     print("\n  Note: Feature weights adapt as investigators confirm or reject matches —")
     print("  this only reorders future comparisons, it never assigns guilt.")
-
-
 def render_all(fir: dict):
     matches = compute_matches(fir)
     render_fir_node(fir)
@@ -229,8 +192,6 @@ def render_all(fir: dict):
     render_gaps(fir)
     render_report(fir, matches)
     return matches
-
-
 def apply_feedback(matches: List[dict], case_id: str, action: str):
     """action: 'confirm' or 'reject'"""
     match = next((m for m in matches if m["pc"]["id"] == case_id), None)
@@ -242,14 +203,10 @@ def apply_feedback(matches: List[dict], case_id: str, action: str):
         weights[k] = max(0.01, weights[k] + delta)
     normalize_weights()
     feedback_state[case_id] = "confirmed" if action == "confirm" else "rejected"
-
-
 # ---------------- interactive loop ----------------
-
 def main():
     render_stamp()
     render_fir_select()
-
     while True:
         choice = input(f"\nSelect FIR [1-{len(incoming_firs)}] (or 'q' to quit): ").strip()
         if choice.lower() == "q":
@@ -260,10 +217,8 @@ def main():
         except (ValueError, IndexError):
             print("  Invalid selection.")
             continue
-
         feedback_state.clear()
         matches = render_all(fir)
-
         while True:
             fb = input(
                 "\nGive feedback? (format: <case_id> confirm|reject, or 'n' for none, "
@@ -282,10 +237,7 @@ def main():
             matches = compute_matches(fir)
             render_matches(matches)
             render_report(fir, matches)
-
     print("\nSession ended. CrimeDNA-X does not identify suspects, predict guilt, "
           "or recommend arrests — human investigators make all final decisions.")
-
-
 if __name__ == "__main__":
     main()
