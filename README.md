@@ -73,4 +73,4 @@ If I had more time, I would add:
 ## Note
 This is a hackathon prototype. The matching logic and explanations are simplified for the demo. The goal is to show how behavioral signatures and explainable AI can support investigations, not to replace human judgment.
 ## Author
-Built by 'CogniCore' as a hackathon project for the AI-Driven Crime Analytics & Visualization Platform challenge.
+Built by the team'CogniCore' as a hackathon project for the AI-Driven Crime Analytics & Visualization Platform challenge.
